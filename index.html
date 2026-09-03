@@ -44,7 +44,7 @@
     .toast{position:absolute;left:16px;right:16px;bottom:calc(var(--nav)+10px);background:#1a1408;border:1px solid #b67a28;color:var(--copper);padding:10px;border-radius:12px;font-size:12px;text-align:center;display:none;z-index:30}
 
     /* 3D stage */
-    #stage{position:relative;height:42vh;min-height:280px;max-height:380px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0a1420;margin-bottom:10px}
+    #stage{position:relative;height:268px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0a1420;margin-bottom:10px}
     #c3d{position:absolute;inset:0;width:100%;height:100%;display:block}
     .hud{position:absolute;inset:0;pointer-events:none;z-index:2}
     .hud > *{pointer-events:auto}
@@ -221,46 +221,50 @@ function rarityHex(r){
 }
 function mkHuman(opts){
   const g = new THREE.Group();
-  const skin = opts.skin || 0xc9a07a;
-  const armor = opts.armor || 0x3a4a58;
-  const cloth = opts.cloth || 0x5a4030;
-  const pants = opts.hasLegs ? armor : cloth;
-  const bootsC = opts.hasBoots ? 0x2a1c12 : 0x3a2a20;
-  const hips = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 10), mat(pants, 0.3));
-  hips.position.y = 0.62; g.add(hips);
+  const skin = opts.skin || 0xe8c4a0;
+  const armor = opts.armor || 0x8a93a0;
+  const cloth = opts.cloth || 0xc43a3a;
+  const pants = opts.hasLegs ? armor : 0x4a5560;
+  const bootsC = opts.hasBoots ? 0x3a3a42 : 0x2a2a30;
+  const hips = new THREE.Mesh(new THREE.SphereGeometry(0.28, 10, 10), mat(pants, 0.25));
+  hips.position.y = 0.42; g.add(hips);
   for(const s of [-1,1]){
-    const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.38, 5, 8), mat(pants, 0.25));
-    leg.position.set(s*0.11, 0.32, 0); g.add(leg);
-    const boot = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.22), mat(bootsC, 0.2));
-    boot.position.set(s*0.11, 0.07, 0.04); g.add(boot);
+    const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.11, 0.22, 5, 8), mat(pants, 0.2));
+    leg.position.set(s*0.13, 0.22, 0); g.add(leg);
+    const boot = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.1, 0.22), mat(bootsC, 0.15));
+    boot.position.set(s*0.13, 0.06, 0.03); g.add(boot);
   }
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.26, 0.52, 6, 10), mat(opts.hasChest?armor:cloth, 0.5));
-  body.position.y = 1.02; g.add(body);
-  for(const s of [-1,1]){
-    const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.38, 5, 8), mat(opts.hasChest?armor:skin, 0.3));
-    arm.position.set(s*0.34, 1.02, 0); arm.rotation.z = s*0.25; g.add(arm);
+  const body = new THREE.Mesh(new THREE.SphereGeometry(0.36, 12, 12), mat(opts.hasChest?armor:0x6a7080, 0.35));
+  body.scale.set(1, 1.05, 0.85); body.position.y = 0.78; g.add(body);
+  const belt = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.035, 6, 12), mat(0x6b3a24, 0.2));
+  belt.rotation.x = Math.PI/2; belt.position.y = 0.52; g.add(belt);
+  const cape = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.7, 8, 1, true), mat(cloth, 0.08));
+  cape.position.set(0, 0.62, -0.18); cape.rotation.x = 0.35; g.add(cape);
+  const armL = new THREE.Group(); armL.position.set(-0.38, 0.82, 0.04);
+  const armR = new THREE.Group(); armR.position.set(0.38, 0.82, 0.04);
+  for(const [arm,s] of [[armL,-1],[armR,1]]){
+    const a = new THREE.Mesh(new THREE.CapsuleGeometry(0.08, 0.28, 5, 8), mat(armor, 0.3));
+    a.rotation.z = s*0.35; arm.add(a);
+    g.add(arm);
   }
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 14), mat(skin, 0.08));
-  head.position.y = 1.52; g.add(head);
-  const helm = new THREE.Mesh(new THREE.SphereGeometry(0.23, 12, 12), mat(opts.helm || 0xc9a46a, 0.75));
-  helm.scale.set(1.05,0.72,1.1); helm.position.y = 1.62; helm.visible = !!opts.hasHelm; g.add(helm);
-  if(opts.hasHelm){
-    const visor = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.06, 0.12), mat(0x111820, 0.4));
-    visor.position.set(0, 1.56, 0.16); g.add(visor);
-  }
-  const cloak = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.85, 10, 1, true), mat(opts.accent || 0x1a4a44, 0.12));
-  cloak.position.set(0, 0.95, -0.16); cloak.rotation.x = 0.2; cloak.visible = !!opts.hasChest; g.add(cloak);
-  const blade = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.78, 0.06), mat(opts.blade || 0xcfe4f2, 0.9));
-  blade.position.set(0.42, 1.12, 0.12); blade.visible = !!opts.hasWeapon; g.add(blade);
-  const hilt = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.05, 0.05), mat(0x4a3020, 0.3));
-  hilt.position.set(0.42, 0.74, 0.12); hilt.visible = !!opts.hasWeapon; g.add(hilt);
-  const shield = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.05, 8), mat(opts.shield || 0x2a6a78, 0.55));
-  shield.rotation.z = Math.PI/2; shield.position.set(-0.42, 0.98, 0.08); shield.visible = !!opts.hasShield; g.add(shield);
-  if(opts.glow){
-    const aura = new THREE.Mesh(new THREE.SphereGeometry(0.75, 12, 12), new THREE.MeshBasicMaterial({color:opts.glow, transparent:true, opacity:0.14}));
-    aura.position.y = 1; g.add(aura);
-  }
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), mat(skin, 0.05));
+  head.position.y = 1.22; g.add(head);
+  const helm = new THREE.Mesh(new THREE.SphereGeometry(0.30, 12, 12), mat(opts.helm || 0xb8c0c8, 0.7));
+  helm.scale.set(1.08, 0.78, 1.12); helm.position.y = 1.32; g.add(helm);
+  const visor = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.07, 0.12), mat(0x1a1e24, 0.4));
+  visor.position.set(0, 1.24, 0.22); g.add(visor);
+  const crest = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.16), mat(cloth, 0.1));
+  crest.position.set(0, 1.52, 0); g.add(crest);
+  const blade = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.62, 0.07), mat(opts.blade || 0xd8e4ee, 0.85));
+  blade.position.set(0.52, 0.95, 0.12); g.add(blade);
+  const hilt = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.05, 0.05), mat(0x5a3a20, 0.3));
+  hilt.position.set(0.52, 0.64, 0.12); g.add(hilt);
+  const shield = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.24, 0.06, 8), mat(opts.shield || 0xc43a3a, 0.4));
+  shield.rotation.z = Math.PI/2; shield.position.set(-0.48, 0.72, 0.12); g.add(shield);
+  const boss = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), mat(0xe8e0d0, 0.6));
+  boss.position.set(-0.52, 0.72, 0.12); g.add(boss);
   g.userData.blade = blade;
+  g.userData.armR = armR;
   return g;
 }
 function mkBug(){
@@ -315,7 +319,7 @@ function bootThree(){
   const fogCol = S.zone===2?0x12101a:S.zone===1?0x1a1610:0x1a120c;
   scene.fog = new THREE.Fog(fogCol, 5.5, 14);
   const cam = new THREE.PerspectiveCamera(36, w/h, 0.1, 40);
-  cam.position.set(0.2, 2.05, 5.6); cam.lookAt(0, 0.95, 0);
+  cam.position.set(0.15, 1.55, 4.4); cam.lookAt(0, 0.7, 0);
   const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:false});
   renderer.setSize(w, h, false); renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.setClearColor(fogCol, 1);
@@ -350,49 +354,15 @@ function bootThree(){
   }
 
   const wr = S.gear.weapon ? S.gear.weapon.r : 0;
-  const hero = new THREE.Group();
-  hero.position.set(-1.55, 0, 0.55);
-  hero.rotation.y = Math.PI*0.55;
-  hero.userData.blade = hero;
-  scene.add(hero);
-  const placeholder = mkHuman({
-    armor: 0x3a4a58, accent:0x8a3030, helm:0xc0c8d0, blade:0xcfe4f2, shield:0x8a3030,
+  const hero = mkHuman({
+    armor: 0x9aa3ae, cloth:0xc43a3a, helm:0xc5ccd4, blade:0xe8f0f6, shield:0xc43a3a,
     hasHelm:true, hasChest:true, hasWeapon:true, hasShield:true, hasLegs:true, hasBoots:true
   });
-  hero.add(placeholder);
-  if(typeof THREE.GLTFLoader==='function'){
-    const urls = [
-      KNIGHT_URL,
-      "https://cdn.jsdelivr.net/gh/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/addons/kaykit_character_pack_adventures/Characters/gltf/Knight.glb"
-    ];
-    const loadK = (i)=>{
-      if(i>=urls.length){ toast('Knight 3D non caricato'); return; }
-      new THREE.GLTFLoader().load(urls[i], (gltf)=>{
-      if(!three.ready) return;
-      placeholder.visible = false;
-      const model = gltf.scene;
-      model.scale.set(1.15,1.15,1.15);
-      model.traverse(o=>{ if(o.isMesh){ o.castShadow=false; o.frustumCulled=false; }});
-      hero.add(model);
-      const mixer = new THREE.AnimationMixer(model);
-      const clips = gltf.animations || [];
-      const idle = pickClip(clips, ['idle','stand','breath']);
-      const walk = pickClip(clips, ['walk','run','move']);
-      const attack = pickClip(clips, ['attack','slash','1h','sword','melee','hit']);
-      three.mixer = mixer;
-      three.actions = {
-        idle: idle ? mixer.clipAction(idle) : null,
-        walk: walk ? mixer.clipAction(walk) : null,
-        attack: attack ? mixer.clipAction(attack) : null
-      };
-      three.clock = new THREE.Clock();
-      playHero('idle');
-    }, undefined, ()=> loadK(i+1));
-    };
-    loadK(0);
-  }
+  hero.position.set(-1.15, 0, 0.55);
+  hero.rotation.y = Math.PI*0.45;
+  scene.add(hero);
   const pet = mkBug(); pet.visible = !!S.pet; pet.position.set(-2.15, 0.18, 0.9); scene.add(pet);
-  const orcA = mkOrc(1.7); const orcB = mkOrc(2.35); orcB.position.z = 0.95; scene.add(orcA, orcB);
+  const orcA = mkOrc(1.25); const orcB = mkOrc(1.85); orcB.position.z = 0.85; scene.add(orcA, orcB);
 
   three = {ready:true, scene, cam, renderer, hero, pet, orcs:[orcA,orcB], flame, fire, t:0};
   loop();
@@ -403,15 +373,16 @@ function loop(){
   const t = three.t;
   three.flame.scale.y = 1 + Math.sin(t*8)*0.15;
   three.fire.intensity = 2 + Math.sin(t*6)*0.4;
-  if(three.mixer && three.clock) three.mixer.update(three.clock.getDelta());
   if(S.fighting){
-    playHero(three.actions && three.actions.attack ? 'attack' : 'walk');
-    three.hero.position.x = -1.4 + Math.sin(t*8)*0.03;
-    three.orcs.forEach((o,i)=> o.position.x = 1.7+i*0.6 + Math.sin(t*9+i)*0.05);
+    const swing = Math.sin(t*10);
+    if(three.hero.userData.armR) three.hero.userData.armR.rotation.x = swing*0.9;
+    if(three.hero.userData.blade) three.hero.userData.blade.rotation.z = swing*0.5;
+    three.hero.position.x = -1.05 + Math.sin(t*8)*0.03;
+    three.orcs.forEach((o,i)=> o.position.x = 1.25+i*0.55 + Math.sin(t*9+i)*0.04);
     three.pet.rotation.y = t*3;
   } else {
-    playHero('idle');
-    three.hero.position.y = Math.sin(t*2)*0.015;
+    three.hero.position.y = Math.sin(t*2)*0.012;
+    if(three.hero.userData.armR) three.hero.userData.armR.rotation.x = 0;
   }
   three.renderer.render(three.scene, three.cam);
   three.raf = requestAnimationFrame(loop);
