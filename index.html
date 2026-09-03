@@ -96,6 +96,7 @@
   <div class="sheet" id="sheet" onclick="if(event.target===this)closeSheet()"></div>
 </div>
 <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 const RAR = [
   {id:0,n:'Comune',col:'#9aa4b5'},
@@ -207,6 +208,7 @@ function go(tab,sub){
 function stopThree(){
   three.ready=false;
   cancelAnimationFrame(three.raf);
+  if(three.mixer){ three.mixer.stopAllAction(); three.mixer = null; }
   if(three.renderer){ three.renderer.dispose(); three.renderer.domElement.remove(); three.renderer=null; }
 }
 function mat(color, metal=0.4){ return new THREE.MeshStandardMaterial({color, metalness:metal, roughness:0.45}); }
@@ -280,6 +282,31 @@ function mkOrc(x){
   });
   g.position.set(x, 0, 0.4); g.rotation.y = -Math.PI*0.7; return g;
 }
+
+const KNIGHT_URL = "https://cdn.jsdelivr.net/gh/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0@672074b/addons/kaykit_character_pack_adventures/Characters/gltf/Knight.glb";
+function pickClip(anims, keys){
+  const low = anims.map(a=>({a, n:a.name.toLowerCase()}));
+  for(const k of keys){
+    const hit = low.find(x=>x.n.includes(k));
+    if(hit) return hit.a;
+  }
+  return anims[0] || null;
+}
+function playHero(kind){
+  if(!three.actions) return;
+  const next = three.actions[kind] || three.actions.idle;
+  if(!next || three.curAct===next) return;
+  if(three.curAct) three.curAct.fadeOut(0.12);
+  next.reset().fadeIn(0.12).play();
+  three.curAct = next;
+  if(kind==='attack'){
+    next.setLoop(THREE.LoopOnce, 1);
+    next.clampWhenFinished = true;
+  } else {
+    next.setLoop(THREE.LoopRepeat, Infinity);
+  }
+}
+
 function bootThree(){
   const canvas = document.getElementById('c3d');
   if(!canvas || typeof THREE==='undefined') return;
@@ -323,21 +350,39 @@ function bootThree(){
   }
 
   const wr = S.gear.weapon ? S.gear.weapon.r : 0;
-  const hero = mkHuman({
-    armor: S.gear.chest ? 0x3a4a58 : 0x6a4a38,
-    accent: S.gear.chest ? rarityHex(S.gear.chest.r) : 0x3a2a20,
-    helm: S.gear.helm ? rarityHex(S.gear.helm.r) : 0xc9a07a,
-    blade: S.gear.weapon ? rarityHex(wr) : 0xb8d4e8,
-    shield: S.gear.shield ? rarityHex(S.gear.shield.r) : 0x2a6a78,
-    hasHelm: !!S.gear.helm,
-    hasChest: !!S.gear.chest,
-    hasWeapon: !!S.gear.weapon,
-    hasShield: !!S.gear.shield,
-    hasLegs: !!S.gear.legs,
-    hasBoots: !!S.gear.boots,
-    glow: S.gear.weapon && wr>=3 ? rarityHex(wr) : null
+  const hero = new THREE.Group();
+  hero.position.set(-1.55, 0, 0.55);
+  hero.rotation.y = Math.PI*0.55;
+  hero.userData.blade = hero;
+  scene.add(hero);
+  const placeholder = mkHuman({
+    armor: 0x3a4a58, accent:0x8a3030, helm:0xc0c8d0, blade:0xcfe4f2, shield:0x8a3030,
+    hasHelm:true, hasChest:true, hasWeapon:true, hasShield:true, hasLegs:true, hasBoots:true
   });
-  hero.position.set(-1.6, 0, 0.5); hero.rotation.y = Math.PI*0.55; scene.add(hero);
+  hero.add(placeholder);
+  if(typeof THREE.GLTFLoader==='function'){
+    new THREE.GLTFLoader().load(KNIGHT_URL, (gltf)=>{
+      if(!three.ready) return;
+      placeholder.visible = false;
+      const model = gltf.scene;
+      model.scale.set(1.15,1.15,1.15);
+      model.traverse(o=>{ if(o.isMesh){ o.castShadow=false; o.frustumCulled=false; }});
+      hero.add(model);
+      const mixer = new THREE.AnimationMixer(model);
+      const clips = gltf.animations || [];
+      const idle = pickClip(clips, ['idle','stand','breath']);
+      const walk = pickClip(clips, ['walk','run','move']);
+      const attack = pickClip(clips, ['attack','slash','1h','sword','melee','hit']);
+      three.mixer = mixer;
+      three.actions = {
+        idle: idle ? mixer.clipAction(idle) : null,
+        walk: walk ? mixer.clipAction(walk) : null,
+        attack: attack ? mixer.clipAction(attack) : null
+      };
+      three.clock = new THREE.Clock();
+      playHero('idle');
+    }, undefined, ()=>{ toast('Knight 3D non caricato'); });
+  }
   const pet = mkBug(); pet.visible = !!S.pet; pet.position.set(-2.15, 0.18, 0.9); scene.add(pet);
   const orcA = mkOrc(1.7); const orcB = mkOrc(2.35); orcB.position.z = 0.95; scene.add(orcA, orcB);
 
@@ -350,13 +395,15 @@ function loop(){
   const t = three.t;
   three.flame.scale.y = 1 + Math.sin(t*8)*0.15;
   three.fire.intensity = 2 + Math.sin(t*6)*0.4;
+  if(three.mixer && three.clock) three.mixer.update(three.clock.getDelta());
   if(S.fighting){
-    three.hero.position.x = -1.35 + Math.sin(t*10)*0.06;
-    three.hero.userData.blade.rotation.z = Math.sin(t*12)*0.6;
+    playHero(three.actions && three.actions.attack ? 'attack' : 'walk');
+    three.hero.position.x = -1.4 + Math.sin(t*8)*0.03;
     three.orcs.forEach((o,i)=> o.position.x = 1.7+i*0.6 + Math.sin(t*9+i)*0.05);
     three.pet.rotation.y = t*3;
   } else {
-    three.hero.position.y = Math.sin(t*2)*0.02;
+    playHero('idle');
+    three.hero.position.y = Math.sin(t*2)*0.015;
   }
   three.renderer.render(three.scene, three.cam);
   three.raf = requestAnimationFrame(loop);
