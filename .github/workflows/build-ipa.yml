@@ -1,0 +1,61 @@
+name: Build IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+jobs:
+  ipa:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Prepara www
+        run: |
+          mkdir -p www
+          cp -n index.html www/ 2>/dev/null || true
+          cp -n manifest.json www/ 2>/dev/null || true
+          cp -n sw.js www/ 2>/dev/null || true
+          cp -n icon-180.png www/ 2>/dev/null || true
+          cp -n icon-512.png www/ 2>/dev/null || true
+          ls -la www
+
+      - name: Dipendenze
+        run: |
+          npm install
+          npx cap add ios
+          npx cap sync ios
+
+      - name: Compila senza firma
+        run: |
+          cd ios/App
+          xcodebuild \
+            -project App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY=- \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM="" \
+            PRODUCT_BUNDLE_IDENTIFIER=it.velmora.app \
+            IPHONEOS_DEPLOYMENT_TARGET=15.0
+
+      - name: Crea IPA
+        run: |
+          APP=$(find ios/App/build -name "App.app" -type d | head -n 1)
+          echo "Trovato: $APP"
+          mkdir -p Payload
+          cp -R "$APP" Payload/Velmora.app
+          zip -r Velmora.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Velmora-ipa
+          path: Velmora.ipa
