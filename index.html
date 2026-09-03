@@ -20,8 +20,8 @@
       --nav: calc(64px + env(safe-area-inset-bottom));
     }
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:Outfit,system-ui,sans-serif;overflow:hidden}
-    #app{height:100%;max-width:430px;margin:0 auto;position:relative;background:var(--bg2);display:flex;flex-direction:column}
+    html,body{margin:0;width:100%;height:100%;height:100dvh;min-height:100dvh;background:var(--bg2);color:var(--text);font-family:Outfit,system-ui,sans-serif;overflow:hidden}
+    #app{position:fixed;inset:0;width:100%;max-width:430px;margin:0 auto;height:100dvh;min-height:100dvh;background:var(--bg2);display:flex;flex-direction:column}
     .screen{flex:1;overflow-y:auto;padding:12px 12px calc(var(--nav) + 10px);scrollbar-width:none}
     .screen::-webkit-scrollbar{display:none}
     .nav{position:absolute;left:0;right:0;bottom:0;height:var(--nav);padding-bottom:env(safe-area-inset-bottom);
@@ -44,7 +44,7 @@
     .toast{position:absolute;left:16px;right:16px;bottom:calc(var(--nav)+10px);background:#1a1408;border:1px solid #b67a28;color:var(--copper);padding:10px;border-radius:12px;font-size:12px;text-align:center;display:none;z-index:30}
 
     /* 3D stage */
-    #stage{position:relative;height:268px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0a1420;margin-bottom:10px}
+    #stage{position:relative;height:42vh;min-height:280px;max-height:380px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0a1420;margin-bottom:10px}
     #c3d{position:absolute;inset:0;width:100%;height:100%;display:block}
     .hud{position:absolute;inset:0;pointer-events:none;z-index:2}
     .hud > *{pointer-events:auto}
@@ -95,8 +95,8 @@
   <div class="toast" id="toast"></div>
   <div class="sheet" id="sheet" onclick="if(event.target===this)closeSheet()"></div>
 </div>
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-<script src="https://unpkg.com/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 const RAR = [
   {id:0,n:'Comune',col:'#9aa4b5'},
@@ -361,7 +361,13 @@ function bootThree(){
   });
   hero.add(placeholder);
   if(typeof THREE.GLTFLoader==='function'){
-    new THREE.GLTFLoader().load(KNIGHT_URL, (gltf)=>{
+    const urls = [
+      KNIGHT_URL,
+      "https://cdn.jsdelivr.net/gh/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/addons/kaykit_character_pack_adventures/Characters/gltf/Knight.glb"
+    ];
+    const loadK = (i)=>{
+      if(i>=urls.length){ toast('Knight 3D non caricato'); return; }
+      new THREE.GLTFLoader().load(urls[i], (gltf)=>{
       if(!three.ready) return;
       placeholder.visible = false;
       const model = gltf.scene;
@@ -381,7 +387,9 @@ function bootThree(){
       };
       three.clock = new THREE.Clock();
       playHero('idle');
-    }, undefined, ()=>{ toast('Knight 3D non caricato'); });
+    }, undefined, ()=> loadK(i+1));
+    };
+    loadK(0);
   }
   const pet = mkBug(); pet.visible = !!S.pet; pet.position.set(-2.15, 0.18, 0.9); scene.add(pet);
   const orcA = mkOrc(1.7); const orcB = mkOrc(2.35); orcB.position.z = 0.95; scene.add(orcA, orcB);
