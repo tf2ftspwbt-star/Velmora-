@@ -1,0 +1,75 @@
+name: Godot IPA
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "godot/**"
+      - ".github/workflows/godot-ipa.yml"
+
+env:
+  GODOT_VERSION: 4.4.1-stable
+  TEMPLATE_DIR: 4.4.1.stable
+  IOS_PRESET: iOS
+
+jobs:
+  ipa:
+    runs-on: macos-14
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scarica Godot
+        run: |
+          curl -L "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_macos.universal.zip" -o godot.zip
+          unzip -q godot.zip -d godot_app
+
+      - name: Scarica template iOS
+        run: |
+          curl -L "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz" -o templates.tpz
+          mkdir -p "$HOME/Library/Application Support/Godot/export_templates/${TEMPLATE_DIR}"
+          unzip -q templates.tpz -d tpl
+          if [ -d tpl/templates ]; then
+            cp -R tpl/templates/* "$HOME/Library/Application Support/Godot/export_templates/${TEMPLATE_DIR}/"
+          else
+            cp -R tpl/* "$HOME/Library/Application Support/Godot/export_templates/${TEMPLATE_DIR}/"
+          fi
+
+      - name: Esporta progetto Xcode
+        run: |
+          mkdir -p build/ios
+          "godot_app/Godot.app/Contents/MacOS/Godot" --headless --path godot \
+            --export-release "${IOS_PRESET}" ../build/ios/Velmora.xcodeproj
+
+      - name: Compila senza firma
+        run: |
+          PROJ=$(find build -name "*.xcodeproj" | head -n 1)
+          echo "Xcode proj: $PROJ"
+          SCHEME=$(xcodebuild -list -project "$PROJ" | awk '/Schemes/{s=1;next} s&&NF{print $1; exit}')
+          echo "Scheme: $SCHEME"
+          xcodebuild archive \
+            -project "$PROJ" \
+            -scheme "$SCHEME" \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/ios/App.xcarchive \
+            -configuration Release \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM=""
+
+      - name: Crea IPA
+        run: |
+          APP=$(find build/ios/App.xcarchive/Products/Applications -name "*.app" -type d | head -n 1)
+          echo "App: $APP"
+          test -n "$APP"
+          rm -rf Payload
+          mkdir Payload
+          cp -R "$APP" Payload/
+          zip -r Velmora-godot.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Velmora-godot-ipa
+          path: Velmora-godot.ipa
