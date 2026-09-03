@@ -306,10 +306,11 @@ function startFight(){
     if(!S.fighting){ clearInterval(id); return; }
     n++;
     const watk = (S.gear.weapon && S.gear.weapon.atk) || 0;
-    const dmg = 18 + Math.floor(Math.random()*16) + watk + S.lv;
-    const taken = 8 + Math.floor(Math.random()*14);
-    S.ehp = Math.max(0, S.ehp - Math.round(dmg/12));
-    S.hp = Math.max(0, S.hp - Math.round(taken/4));
+    const def = Object.values(S.gear).reduce((a,g)=>g?a+g.def+g.plus*2:a,0);
+    const dmg = 28 + Math.floor(Math.random()*18) + watk + S.lv*3;
+    const taken = Math.max(3, 8 + Math.floor(Math.random()*6) - Math.floor(def/6));
+    S.ehp = Math.max(0, S.ehp - (20 + Math.floor(dmg/10)));
+    S.hp = Math.max(0, S.hp - taken);
     floatDmg(dmg, false); floatDmg(taken, true);
     renderHuntChrome();
     if(S.ehp<=0){
