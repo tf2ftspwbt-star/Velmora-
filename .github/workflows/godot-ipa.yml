@@ -15,43 +15,70 @@ env:
 jobs:
   ipa:
     runs-on: macos-14
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
       - name: Scarica Godot
         run: |
+          set -euo pipefail
           curl -L "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_macos.universal.zip" -o godot.zip
           unzip -q godot.zip -d godot_app
+          GODOT=$(find godot_app -type f -path "*/MacOS/Godot" | head -n 1)
+          echo "GODOT=$GODOT" >> "$GITHUB_ENV"
+          test -n "$GODOT"
+          "$GODOT" --version
 
-      - name: Scarica template iOS
+      - name: Installa template iOS
         run: |
+          set -euo pipefail
           curl -L "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz" -o templates.tpz
-          mkdir -p "$HOME/Library/Application Support/Godot/export_templates/${TEMPLATE_DIR}"
+          mkdir -p tpl
           unzip -q templates.tpz -d tpl
+          DEST="$HOME/Library/Application Support/Godot/export_templates/${TEMPLATE_DIR}"
+          mkdir -p "$DEST"
           if [ -d tpl/templates ]; then
-            cp -R tpl/templates/* "$HOME/Library/Application Support/Godot/export_templates/${TEMPLATE_DIR}/"
+            cp -R tpl/templates/. "$DEST/"
           else
-            cp -R tpl/* "$HOME/Library/Application Support/Godot/export_templates/${TEMPLATE_DIR}/"
+            cp -R tpl/. "$DEST/"
           fi
+          IOSZIP=$(find tpl "$DEST" -name "ios.zip" | head -n 1)
+          echo "ios.zip trovato: $IOSZIP"
+          test -n "$IOSZIP"
+          cp "$IOSZIP" "$DEST/ios.zip"
+          if [ ! -f "$DEST/version.txt" ]; then
+            echo "${TEMPLATE_DIR}" > "$DEST/version.txt"
+          fi
+          ls -la "$DEST"
+
+      - name: Importa progetto
+        run: |
+          set -euo pipefail
+          "$GODOT" --headless --path "$GITHUB_WORKSPACE/godot" --import || true
+          ls -la "$GITHUB_WORKSPACE/godot"
 
       - name: Esporta progetto Xcode
         run: |
-          mkdir -p build/ios
-          "godot_app/Godot.app/Contents/MacOS/Godot" --headless --path godot \
-            --export-release "${IOS_PRESET}" ../build/ios/Velmora.xcodeproj
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/build/ios"
+          "$GODOT" --headless --path "$GITHUB_WORKSPACE/godot" \
+            --export-release "${IOS_PRESET}" \
+            "$GITHUB_WORKSPACE/build/ios/Velmora.xcodeproj"
+          find "$GITHUB_WORKSPACE/build" -maxdepth 3 -print
 
       - name: Compila senza firma
         run: |
-          PROJ=$(find build -name "*.xcodeproj" | head -n 1)
+          set -euo pipefail
+          PROJ=$(find "$GITHUB_WORKSPACE/build" -name "*.xcodeproj" | head -n 1)
           echo "Xcode proj: $PROJ"
+          test -n "$PROJ"
           SCHEME=$(xcodebuild -list -project "$PROJ" | awk '/Schemes/{s=1;next} s&&NF{print $1; exit}')
           echo "Scheme: $SCHEME"
           xcodebuild archive \
             -project "$PROJ" \
             -scheme "$SCHEME" \
             -destination 'generic/platform=iOS' \
-            -archivePath build/ios/App.xcarchive \
+            -archivePath "$GITHUB_WORKSPACE/build/ios/App.xcarchive" \
             -configuration Release \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="" \
@@ -61,7 +88,8 @@ jobs:
 
       - name: Crea IPA
         run: |
-          APP=$(find build/ios/App.xcarchive/Products/Applications -name "*.app" -type d | head -n 1)
+          set -euo pipefail
+          APP=$(find "$GITHUB_WORKSPACE/build/ios/App.xcarchive/Products/Applications" -name "*.app" -type d | head -n 1)
           echo "App: $APP"
           test -n "$APP"
           rm -rf Payload
