@@ -44,7 +44,7 @@
     .toast{position:absolute;left:16px;right:16px;bottom:calc(var(--nav)+10px);background:#1a1408;border:1px solid #b67a28;color:var(--copper);padding:10px;border-radius:12px;font-size:12px;text-align:center;display:none;z-index:30}
 
     /* 3D stage */
-    #stage{position:relative;height:230px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0a1420;margin-bottom:10px}
+    #stage{position:relative;height:268px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0a1420;margin-bottom:10px}
     #c3d{position:absolute;inset:0;width:100%;height:100%;display:block}
     .hud{position:absolute;inset:0;pointer-events:none;z-index:2}
     .hud > *{pointer-events:auto}
@@ -120,15 +120,39 @@ const SLOTS = {
   amulet:   {slot:'Amuleto',   svg:'amulet'}
 };
 const NAMES = {
-  helm:['Elmo di Stracci','Cuffia di Ferro','Elmo di Bruma'],
-  shoulder:['Stracci alle Spalle','Guardie Spezzate','Spalline di Rame'],
-  chest:['Camicia Rovinata','Cotta del Fiume','Corazza di Scaglie'],
-  legs:['Panni da Strada','Greave di Rame','Gambali Temprati'],
-  boots:['Piedi Nudi Fasciati','Stivali di Cuoio','Passo della Cascata'],
-  weapon:['Ramo Nodoso','Lama di Ruggine','Spada del Vespero'],
-  shield:['Coperchio di Botte','Baluardo Azzurro','Scudo di Quercia'],
-  ring:['Anello di Spago','Anello del Pozzo','Sigillo di Rame'],
-  amulet:['Dente di Cinghiale','Cuore di Muschio','Pendente del Pozzo']
+  0:{
+    helm:['Elmo di Stracci','Cuffia di Ferro','Elmo di Bruma'],
+    shoulder:['Stracci alle Spalle','Guardie Spezzate','Spalline di Rame'],
+    chest:['Camicia Rovinata','Cotta del Fiume','Corazza di Scaglie'],
+    legs:['Panni da Strada','Greave di Rame','Gambali Temprati'],
+    boots:['Piedi Nudi Fasciati','Stivali di Cuoio','Passo della Cascata'],
+    weapon:['Ramo Nodoso','Lama di Ruggine','Spada del Vespero'],
+    shield:['Coperchio di Botte','Baluardo Azzurro','Scudo di Quercia'],
+    ring:['Anello di Spago','Anello del Pozzo','Sigillo di Rame'],
+    amulet:['Dente di Cinghiale','Cuore di Muschio','Pendente del Pozzo']
+  },
+  1:{
+    helm:['Elmo di Polvere','Casco da Minatore','Elmo di Scorie'],
+    shoulder:['Spalle di Iuta','Paraspalle di Piccone','Guardie di Ferrovecchio'],
+    chest:['Giubba di Cava','Cotta di Maglia Rotta','Corazza di Scorie'],
+    legs:['Pantaloni di Polvere','Gambali di Catena','Greave di Ferrovecchio'],
+    boots:['Scarponi di Fango','Stivali da Pozzo','Passo della Galleria'],
+    weapon:['Piccone Spezzato','Lama di Scorie','Spada di Ferrovecchio'],
+    shield:['Targa di Legno Minato','Scudo di Carrello','Baluardo di Scorie'],
+    ring:['Anello di Carbone','Fedina del Pozzo','Sigillo di Ferrovecchio'],
+    amulet:['Ciondolo di Quarzo','Cuore di Miniera','Pendente di Scorie']
+  },
+  2:{
+    helm:['Elmo Fessurato','Elmo della Crepa','Elmo Eclissato'],
+    shoulder:['Spalle di Scheggia','Guardie della Fenditura','Spallacci Eclissati'],
+    chest:['Cotta Fessurata','Corazza della Crepa','Piastra Eclissata'],
+    legs:['Gambali Fessurati','Greave della Crepa','Gambiere Eclissate'],
+    boots:['Stivali Fessurati','Passo della Crepa','Passo Eclissato'],
+    weapon:['Scheggia di Fenditura','Lama della Crepa','Spada Eclissata'],
+    shield:['Targa Fessurata','Scudo della Crepa','Baluardo Eclissato'],
+    ring:['Anello Fessurato','Sigillo della Crepa','Anello Eclissato'],
+    amulet:['Scheggia al Collo','Cuore della Crepa','Pendente Eclissato']
+  }
 };
 
 const S = {
@@ -139,8 +163,15 @@ const S = {
   hp:100, ehp:100,
   pet:null,
   bag:[],
+  zone:0,
+  wins:0,
   gear:{ helm:null, shoulder:null, chest:null, legs:null, boots:null, weapon:null, ring:null, shield:null, amulet:null }
 };
+const ZONES = [
+  {id:0, n:'Bosco del Falò', need:1, hp:100, hit:6, xp:25, drop:0},
+  {id:1, n:'Miniera Abbandonata', need:5, hp:145, hit:11, xp:40, drop:1},
+  {id:2, n:'Fenditura', need:12, hp:200, hit:16, xp:60, drop:2}
+];
 
 function svgIco(kind, col='#c9d0dc'){
   const p = {
@@ -154,7 +185,7 @@ function svgIco(kind, col='#c9d0dc'){
     ring:'M12 7 a5 5 0 1 0 .1 0 M12 9 a3 3 0 1 0 .1 0',
     amulet:'M12 3 L13 8 L12 10 L11 8 Z M12 10 C8 12 8 18 12 20 C16 18 16 12 12 10'
   };
-  return `<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.7" stroke-linejoin="round">${p[kind]?`<path d="${p[kind]}"/>`:'<circle cx="12" cy="12" r="6"/>'}</svg>`;
+  return `<svg class="ico" viewBox="0 0 24 24" fill="${col}" fill-opacity="0.35" stroke="${col}" stroke-width="1.6" stroke-linejoin="round">${p[kind]?`<path d="${p[kind]}"/>`:'<circle cx="12" cy="12" r="6"/>'}</svg>`;
 }
 
 let three = {ready:false, raf:0};
@@ -190,21 +221,41 @@ function mkHuman(opts){
   const g = new THREE.Group();
   const skin = opts.skin || 0xc9a07a;
   const armor = opts.armor || 0x3a4a58;
-  const accent = opts.accent || 0x4ecdc4;
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.28, 0.7, 6, 10), mat(armor, 0.55));
-  body.position.y = 0.85; g.add(body);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), mat(skin, 0.1));
-  head.position.y = 1.48; g.add(head);
-  const helm = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 12), mat(opts.helm || 0xc9a46a, 0.7));
-  helm.scale.set(1,0.7,1.05); helm.position.y = 1.58; helm.visible = !!opts.hasHelm; g.add(helm);
-  const cloak = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.9, 10, 1, true), mat(accent, 0.15));
-  cloak.position.set(0, 0.85, -0.18); cloak.rotation.x = 0.15; cloak.visible = !!opts.hasChest; g.add(cloak);
-  const blade = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.7, 0.07), mat(opts.blade || 0xb8d4e8, 0.85));
-  blade.position.set(0.38, 1.05, 0.1); blade.visible = !!opts.hasWeapon; g.add(blade);
-  const shield = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.06, 10), mat(opts.shield || 0x2a6a78, 0.5));
-  shield.rotation.z = Math.PI/2; shield.position.set(-0.38, 0.95, 0.05); shield.visible = !!opts.hasShield; g.add(shield);
+  const cloth = opts.cloth || 0x5a4030;
+  const pants = opts.hasLegs ? armor : cloth;
+  const bootsC = opts.hasBoots ? 0x2a1c12 : 0x3a2a20;
+  const hips = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 10), mat(pants, 0.3));
+  hips.position.y = 0.62; g.add(hips);
+  for(const s of [-1,1]){
+    const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.38, 5, 8), mat(pants, 0.25));
+    leg.position.set(s*0.11, 0.32, 0); g.add(leg);
+    const boot = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.22), mat(bootsC, 0.2));
+    boot.position.set(s*0.11, 0.07, 0.04); g.add(boot);
+  }
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.26, 0.52, 6, 10), mat(opts.hasChest?armor:cloth, 0.5));
+  body.position.y = 1.02; g.add(body);
+  for(const s of [-1,1]){
+    const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.38, 5, 8), mat(opts.hasChest?armor:skin, 0.3));
+    arm.position.set(s*0.34, 1.02, 0); arm.rotation.z = s*0.25; g.add(arm);
+  }
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 14), mat(skin, 0.08));
+  head.position.y = 1.52; g.add(head);
+  const helm = new THREE.Mesh(new THREE.SphereGeometry(0.23, 12, 12), mat(opts.helm || 0xc9a46a, 0.75));
+  helm.scale.set(1.05,0.72,1.1); helm.position.y = 1.62; helm.visible = !!opts.hasHelm; g.add(helm);
+  if(opts.hasHelm){
+    const visor = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.06, 0.12), mat(0x111820, 0.4));
+    visor.position.set(0, 1.56, 0.16); g.add(visor);
+  }
+  const cloak = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.85, 10, 1, true), mat(opts.accent || 0x1a4a44, 0.12));
+  cloak.position.set(0, 0.95, -0.16); cloak.rotation.x = 0.2; cloak.visible = !!opts.hasChest; g.add(cloak);
+  const blade = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.78, 0.06), mat(opts.blade || 0xcfe4f2, 0.9));
+  blade.position.set(0.42, 1.12, 0.12); blade.visible = !!opts.hasWeapon; g.add(blade);
+  const hilt = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.05, 0.05), mat(0x4a3020, 0.3));
+  hilt.position.set(0.42, 0.74, 0.12); hilt.visible = !!opts.hasWeapon; g.add(hilt);
+  const shield = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.05, 8), mat(opts.shield || 0x2a6a78, 0.55));
+  shield.rotation.z = Math.PI/2; shield.position.set(-0.42, 0.98, 0.08); shield.visible = !!opts.hasShield; g.add(shield);
   if(opts.glow){
-    const aura = new THREE.Mesh(new THREE.SphereGeometry(0.7, 12, 12), new THREE.MeshBasicMaterial({color:opts.glow, transparent:true, opacity:0.12}));
+    const aura = new THREE.Mesh(new THREE.SphereGeometry(0.75, 12, 12), new THREE.MeshBasicMaterial({color:opts.glow, transparent:true, opacity:0.14}));
     aura.position.y = 1; g.add(aura);
   }
   g.userData.blade = blade;
@@ -223,7 +274,10 @@ function mkBug(){
   g.position.y = 0.18; return g;
 }
 function mkOrc(x){
-  const g = mkHuman({skin:0x6a8a3a, armor:0x3d4a2a, accent:0x5a3020, helm:0x4a5a30});
+  const g = mkHuman({
+    skin:0x6a8a3a, armor:0x3d4a2a, accent:0x5a3020, helm:0x4a5a30, blade:0x8a9a70, shield:0x3a4a28,
+    hasHelm:true, hasChest:true, hasWeapon:true, hasShield:S.zone>0, hasLegs:true, hasBoots:true
+  });
   g.position.set(x, 0, 0.4); g.rotation.y = -Math.PI*0.7; return g;
 }
 function bootThree(){
@@ -231,20 +285,22 @@ function bootThree(){
   if(!canvas || typeof THREE==='undefined') return;
   const w = canvas.clientWidth, h = canvas.clientHeight;
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x1a120c, 6, 16);
-  const cam = new THREE.PerspectiveCamera(38, w/h, 0.1, 40);
-  cam.position.set(0, 2.2, 6.2); cam.lookAt(0, 0.9, 0);
+  const fogCol = S.zone===2?0x12101a:S.zone===1?0x1a1610:0x1a120c;
+  scene.fog = new THREE.Fog(fogCol, 5.5, 14);
+  const cam = new THREE.PerspectiveCamera(36, w/h, 0.1, 40);
+  cam.position.set(0.2, 2.05, 5.6); cam.lookAt(0, 0.95, 0);
   const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:false});
   renderer.setSize(w, h, false); renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.setClearColor(0x1a140e, 1);
-  scene.add(new THREE.HemisphereLight(0xffd9a0, 0x1a2a20, 1.1));
-  const sun = new THREE.DirectionalLight(0xffb070, 1.4); sun.position.set(-3, 6, 4); scene.add(sun);
-  const fire = new THREE.PointLight(0xff9030, 2.2, 8); fire.position.set(0, 1.1, 0.2); scene.add(fire);
+  renderer.setClearColor(fogCol, 1);
+  scene.add(new THREE.HemisphereLight(0xffd9a0, 0x1a2a20, 1.15));
+  const sun = new THREE.DirectionalLight(0xffb070, 1.55); sun.position.set(-3, 6, 4); scene.add(sun);
+  const fire = new THREE.PointLight(0xff9030, 2.4, 8); fire.position.set(0, 1.1, 0.2); scene.add(fire);
 
-  const ground = new THREE.Mesh(new THREE.CircleGeometry(8, 24), mat(0x2a2418, 0.05));
+  const gCol = S.zone===2?0x1a1824:S.zone===1?0x2a2618:0x24301c;
+  const ground = new THREE.Mesh(new THREE.CircleGeometry(8, 28), mat(gCol, 0.04));
   ground.rotation.x = -Math.PI/2; scene.add(ground);
-  const path = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 7), mat(0x4a4030, 0.08));
-  path.rotation.x = -Math.PI/2; path.position.y = 0.01; scene.add(path);
+  const path = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 7), mat(S.zone===1?0x3a3424:0x4a4030, 0.08));
+  path.rotation.x = -Math.PI/2; path.position.y = 0.015; scene.add(path);
 
   // campfire
   const log = new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.7,6), mat(0x3a2410,0));
@@ -254,9 +310,16 @@ function bootThree(){
   flame.position.set(0, 0.38, 0.15); scene.add(flame);
 
   // rocks / trees simple
-  for(let i=0;i<6;i++){
-    const t = new THREE.Mesh(new THREE.ConeGeometry(0.45, 1.8, 7), mat(0x1c3a28, 0.05));
-    t.position.set(-4+i*1.7, 0.9, -2.4 - (i%2)*0.4); scene.add(t);
+  for(let i=0;i<7;i++){
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.12,0.7,6), mat(0x3a2414,0));
+    const leaf = new THREE.Mesh(new THREE.ConeGeometry(0.48, 1.55, 8), mat(S.zone===2?0x243044:S.zone===1?0x3a4a28:0x1c3a28, 0.05));
+    const x=-4.2+i*1.35, z=-2.2-(i%3)*0.35;
+    trunk.position.set(x, 0.35, z); leaf.position.set(x, 1.25, z);
+    scene.add(trunk, leaf);
+  }
+  for(let i=0;i<4;i++){
+    const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.18+i*0.04, 0), mat(0x4a463c, 0.1));
+    rock.position.set(-1.8+i*1.1, 0.12, 1.3+((i%2)*0.2)); rock.rotation.y=i; scene.add(rock);
   }
 
   const wr = S.gear.weapon ? S.gear.weapon.r : 0;
@@ -270,6 +333,8 @@ function bootThree(){
     hasChest: !!S.gear.chest,
     hasWeapon: !!S.gear.weapon,
     hasShield: !!S.gear.shield,
+    hasLegs: !!S.gear.legs,
+    hasBoots: !!S.gear.boots,
     glow: S.gear.weapon && wr>=3 ? rarityHex(wr) : null
   });
   hero.position.set(-1.6, 0, 0.5); hero.rotation.y = Math.PI*0.55; scene.add(hero);
@@ -299,7 +364,8 @@ function loop(){
 
 function startFight(){
   if(S.energy<2){ toast('Vigore insufficiente'); return; }
-  S.energy -= 2; S.fighting = true; S.hp = 100; S.ehp = 100;
+  const Z = ZONES[S.zone];
+  S.energy -= 2; S.fighting = true; S.hp = 100; S.ehp = Z.hp;
   renderHuntChrome();
   let n = 0;
   const id = setInterval(()=>{
@@ -308,14 +374,14 @@ function startFight(){
     const watk = (S.gear.weapon && S.gear.weapon.atk) || 0;
     const def = Object.values(S.gear).reduce((a,g)=>g?a+g.def+g.plus*2:a,0);
     const dmg = 28 + Math.floor(Math.random()*18) + watk + S.lv*3;
-    const taken = Math.max(3, 8 + Math.floor(Math.random()*6) - Math.floor(def/6));
+    const taken = Math.max(4, Z.hit + Math.floor(Math.random()*6) - Math.floor(def/6));
     S.ehp = Math.max(0, S.ehp - (20 + Math.floor(dmg/10)));
     S.hp = Math.max(0, S.hp - taken);
     floatDmg(dmg, false); floatDmg(taken, true);
     renderHuntChrome();
     if(S.ehp<=0){
       S.fighting=false; clearInterval(id);
-      S.xp += 25 + S.lv*4; S.crowns += 2;
+      S.xp += Z.xp + S.lv*4; S.crowns += 2 + S.zone; S.wins++;
       if(S.xp>=S.xpMax){
         S.xp-=S.xpMax; S.lv++; S.xpMax=Math.round(S.xpMax*1.25);
         S.energyMax = 20 + S.lv*2; S.energy = S.energyMax;
@@ -325,10 +391,12 @@ function startFight(){
       const drop = rollDrop();
       toast(drop ? ('Vittoria · '+drop.name) : 'Vittoria');
       render(); requestAnimationFrame(bootThree);
+      if(S.auto) setTimeout(()=>{ if(S.auto && !S.fighting) startFight(); }, 900);
     } else if(S.hp<=0){
       S.fighting=false; clearInterval(id);
       toast('Sconfitta · ricalibra la build');
       render(); requestAnimationFrame(bootThree);
+      if(S.auto) setTimeout(()=>{ if(S.auto && !S.fighting) startFight(); }, 1400);
     }
   }, 700);
 }
@@ -348,18 +416,19 @@ function rollDrop(){
   const keys = Object.keys(SLOTS);
   const empty = keys.filter(k=>!S.gear[k]);
   const force = empty.length>0 && Math.random()<0.72;
-  if(!force && Math.random()>0.38) return null;
+  if(!force && Math.random()>0.42) return null;
   const key = empty.length ? empty[Math.floor(Math.random()*empty.length)] : keys[Math.floor(Math.random()*keys.length)];
-  const r = S.lv<3 ? 0 : Math.random()<0.06 ? 3 : Math.random()<0.22 ? 2 : Math.random()<0.55 ? 1 : 0;
-  const names = NAMES[key];
+  const bonus = ZONES[S.zone].drop;
+  const r = Math.min(7, (S.lv<3 ? 0 : Math.random()<0.06 ? 3 : Math.random()<0.22 ? 2 : Math.random()<0.55 ? 1 : 0) + bonus);
+  const names = NAMES[S.zone][key];
+  const ilvl = Math.max(1, S.lv + S.zone*2 + Math.floor(Math.random()*4) + r);
   const item = {
     slot: SLOTS[key].slot,
     svg: SLOTS[key].svg,
     name: names[Math.min(r, names.length-1)],
-    r, ilvl: Math.max(1, S.lv + Math.floor(Math.random()*3)),
-    plus:0,
-    atk: (key==='weapon'||key==='ring'||key==='amulet') ? 4+S.lv+r*3 : Math.floor(S.lv/2)+r,
-    def: (key==='weapon') ? 0 : 3+S.lv+r*2
+    r, ilvl, plus:0,
+    atk: Math.round(((key==='weapon'||key==='ring'||key==='amulet') ? 6 : 2) + ilvl*(1+r*0.35) + r*4),
+    def: key==='weapon' ? 0 : Math.round(4 + ilvl*(0.8+r*0.3) + r*3)
   };
   const cur = S.gear[key];
   item.key = key;
@@ -408,8 +477,12 @@ function huntView(){
       <button class="btn btn-c" onclick="startFight()">⚔ ATTACCA</button>
       <button class="btn btn-g" onclick="S.auto=!S.auto;toast(S.auto?'Auto-caccia ON':'Auto OFF');if(S.auto&&!S.fighting)startFight()">AUTO ${S.auto?'ON':'OFF'}</button>
     </div>
+    <div class="card" style="margin-bottom:8px;font-size:13px" onclick="go('world')">
+      <span class="kicker">Zona</span> <b>${ZONES[S.zone].n}</b>
+    </div>
     <div class="card" style="margin-bottom:8px;display:flex;justify-content:space-between">
       <div><div class="kicker">Costo</div><b>⚡ −2 / caccia</b></div>
+      <div style="text-align:center"><div class="kicker">Polvere</div><b style="color:var(--copper)">${S.dust}</b></div>
       <div style="text-align:right"><div class="kicker">Drop</div><span style="color:#6aa6ff">20%</span> <span style="color:#6fbf73">31%</span> <span style="color:#8b93a7">49%</span></div>
     </div>
     <div class="card">
@@ -504,10 +577,21 @@ function equipBag(i){
   render();
 }
 
+function setZone(i){
+  const z=ZONES[i];
+  if(S.lv < z.need){ toast('Serve livello '+z.need); return; }
+  S.zone=i; toast(z.n); render(); if(S.tab==='hunt') requestAnimationFrame(bootThree);
+}
 function worldView(){
-  const acts=[['Fenditura classica','Miniere Abbandonate · 1-5',true],['Assalto al villaggio','Villaggio dei Banditi · 1-1',true],['Titano del Ciclo','Livello 30',false],['Triade','Livello 35',false],['Cava di Essenze','Livello 39',false]];
-  return `<div class="kicker" style="margin-bottom:10px">Reame</div>
-    ${acts.map(a=>`<div class="row ${a[2]?'':'locked'}"><div><b>${a[0]}</b><div class="kicker">${a[1]}</div></div></div>`).join('')}`;
+  return `<div class="kicker" style="margin-bottom:10px">Reame · zone di caccia</div>
+    ${ZONES.map(z=>{
+      const ok = S.lv>=z.need;
+      const on = S.zone===z.id;
+      return `<div class="row ${ok?'':'locked'}" onclick="setZone(${z.id})">
+        <div><b>${on?'▸ ':''}${z.n}</b><div class="kicker">${ok?('HP mostri '+z.hp+' · drop +'+z.drop):('Sblocco LVL '+z.need)}</div></div>
+        <span class="kicker">${on?'IN USO':''}</span>
+      </div>`;
+    }).join('')}`;
 }
 function clashView(){
   return `<div class="kicker" style="margin-bottom:10px">Lizza · sblocchi da lvl 18</div>
@@ -549,7 +633,7 @@ function openItem(key){
       Rarità più alta = mesh più lavorata in 3D (creste, rune, particelle).
     </div>
     <div class="mini">
-      <button class="btn btn-c" onclick="upgrade('${key}',${cost})">SOVRACCARICO +1 · ${cost} polvere</button>
+      <button class="btn btn-c" onclick="upgrade('${key}',${cost})">+1 · ${cost} polvere (hai ${S.dust})</button>
       <button class="btn btn-g" onclick="reroll('${key}')">RICALIBRA AFFISSI</button>
     </div>
     <button class="btn btn-g" style="width:100%;margin-top:8px" onclick="closeSheet()">Chiudi</button>
