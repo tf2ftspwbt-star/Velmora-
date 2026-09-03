@@ -18,6 +18,7 @@ jobs:
         run: |
           mkdir -p www
           cp -f index.html manifest.json sw.js icon-180.png icon-512.png www/ || true
+          cp -f slash.m4a www/ || true
           ls -la www
 
       - name: Dipendenze
