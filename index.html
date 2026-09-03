@@ -119,6 +119,13 @@ const SLOTS = {
   ring:     {slot:'Anello',    svg:'ring'},
   amulet:   {slot:'Amuleto',   svg:'amulet'}
 };
+const WEPS = [
+  {svg:'sword', names:['Spada Corta','Lama del Vespero','Sciabola Runica','Spada Stellare']},
+  {svg:'axe', names:['Ascia Spaccata','Fendente di Scorie','Ascia Abissale','Scure Eclisse']},
+  {svg:'bow', names:['Arco di Frassino','Arco di Bruma','Arco Draconico','Arco Stellare']},
+  {svg:'staff', names:['Bastone Nodoso','Verga della Crepa','Bastone Abissale','Scettro Eclisse']},
+  {svg:'dagger', names:['Pugnale di Ruggine','Stiletto di Scorie','Lama Ombra','Daga Eclisse']}
+];
 const NAMES = {
   0:{
     helm:['Elmo di Stracci','Cuffia di Ferro','Elmo di Bruma'],
@@ -152,25 +159,62 @@ const NAMES = {
     shield:['Targa Fessurata','Scudo della Crepa','Baluardo Eclissato'],
     ring:['Anello Fessurato','Sigillo della Crepa','Anello Eclissato'],
     amulet:['Scheggia al Collo','Cuore della Crepa','Pendente Eclissato']
+  },
+  3:{
+    helm:['Elmo di Palude','Elmo del Relitto','Elmo delle Marea'],
+    shoulder:['Alghe alle Spalle','Spallacci di Chiglia','Guardie di Marea'],
+    chest:['Cotta Marcia','Corazza di Relitto','Piastra di Marea'],
+    legs:['Gambali di Palude','Greave di Chiglia','Gambiere di Marea'],
+    boots:['Stivali di Fango Salso','Passo del Relitto','Passo di Marea'],
+    weapon:['Tridente Rotto','Lama di Relitto','Sciabola di Marea'],
+    shield:['Targa di Palude','Scudo di Chiglia','Baluardo di Marea'],
+    ring:['Anello di Conchiglia','Sigillo del Relitto','Anello di Marea'],
+    amulet:['Perla Fangosa','Cuore di Relitto','Pendente di Marea']
+  },
+  4:{
+    helm:['Elmo di Cenere','Elmo del Cratere','Elmo Magmatico'],
+    shoulder:['Spalle di Cenere','Guardie del Cratere','Spallacci Magmatici'],
+    chest:['Cotta di Cenere','Corazza del Cratere','Piastra Magmatica'],
+    legs:['Gambali di Cenere','Greave del Cratere','Gambiere Magmatiche'],
+    boots:['Stivali di Cenere','Passo del Cratere','Passo Magmatico'],
+    weapon:['Lama di Cenere','Spada del Cratere','Fendente Magmatico'],
+    shield:['Targa di Cenere','Scudo del Cratere','Baluardo Magmatico'],
+    ring:['Anello di Cenere','Sigillo del Cratere','Anello Magmatico'],
+    amulet:['Brace al Collo','Cuore del Cratere','Pendente Magmatico']
+  },
+  5:{
+    helm:['Elmo di Gelo','Elmo della Vetta','Elmo Glaciale'],
+    shoulder:['Spalle di Gelo','Guardie della Vetta','Spallacci Glaciali'],
+    chest:['Cotta di Gelo','Corazza della Vetta','Piastra Glaciale'],
+    legs:['Gambali di Gelo','Greave della Vetta','Gambiere Glaciali'],
+    boots:['Stivali di Gelo','Passo della Vetta','Passo Glaciale'],
+    weapon:['Lama di Gelo','Spada della Vetta','Fendente Glaciale'],
+    shield:['Targa di Gelo','Scudo della Vetta','Baluardo Glaciale'],
+    ring:['Anello di Gelo','Sigillo della Vetta','Anello Glaciale'],
+    amulet:['Ghiaccio al Collo','Cuore della Vetta','Pendente Glaciale']
   }
 };
 
 const S = {
   tab:'hunt', sub:'gear',
   name:'Vesper', lv:1, xp:0, xpMax:120,
-  energy:20, energyMax:20, gems:0, crowns:12, dust:0,
-  auto:false, fighting:false,
+  energy:36, energyMax:36, gems:0, crowns:12, dust:0,
+  auto:false, fighting:false, boss:false, mute:false,
   hp:100, ehp:100,
   pet:null,
   bag:[],
   zone:0,
   wins:0,
+  q:{kills:0, bosses:0, upgrades:0},
   gear:{ helm:null, shoulder:null, chest:null, legs:null, boots:null, weapon:null, ring:null, shield:null, amulet:null }
 };
 const ZONES = [
-  {id:0, n:'Bosco del Falò', need:1, hp:100, hit:6, xp:25, drop:0},
-  {id:1, n:'Miniera Abbandonata', need:5, hp:145, hit:11, xp:40, drop:1},
-  {id:2, n:'Fenditura', need:12, hp:200, hit:16, xp:60, drop:2}
+  {id:0, n:'Bosco del Falò', need:1, hp:100, hit:6, xp:25, drop:0, boss:'Cinghiale di Muschio'},
+  {id:1, n:'Miniera Abbandonata', need:4, hp:145, hit:11, xp:40, drop:1, boss:'Golem di Scorie'},
+  {id:2, n:'Fenditura', need:8, hp:210, hit:16, xp:60, drop:2, boss:'Sentinella Eclissata'},
+  {id:3, n:'Palude del Relitto', need:12, hp:280, hit:22, xp:85, drop:3, boss:'Idra di Marea'},
+  {id:4, n:'Cratere di Cenere', need:16, hp:360, hit:28, xp:110, drop:4, boss:'Tiranno Magmatico'},
+  {id:5, n:'Vetta Glaciale', need:20, hp:460, hit:36, xp:140, drop:5, boss:'Wyrm di Ghiaccio'}
 ];
 
 function svgIco(kind, col='#c9d0dc'){
@@ -181,6 +225,10 @@ function svgIco(kind, col='#c9d0dc'){
     legs:'M8 4 H16 V8 L14 20 H10 L8 8 Z',
     boots:'M5 8 H15 V14 H19 L20 18 H4 Z',
     sword:'M12 2 L14 4 L13 14 L16 20 L8 20 L11 14 Z',
+    axe:'M5 4 H15 L17 8 H13 L12 20 H10 L9 8 H5 Z',
+    bow:'M6 4 Q18 12 6 20 M8 7 L18 12 L8 17',
+    staff:'M12 2 L14 8 L12 22 L10 8 Z M8 6 H16',
+    dagger:'M12 3 L13 10 L15 20 H9 L11 10 Z',
     shield:'M12 2 L20 6 V12 C20 17 12 22 12 22 C12 22 4 17 4 12 V6 Z',
     ring:'M12 7 a5 5 0 1 0 .1 0 M12 9 a3 3 0 1 0 .1 0',
     amulet:'M12 3 L13 8 L12 10 L11 8 Z M12 10 C8 12 8 18 12 20 C16 18 16 12 12 10'
@@ -191,6 +239,16 @@ function svgIco(kind, col='#c9d0dc'){
 let three = {ready:false, raf:0};
 
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._i);t._i=setTimeout(()=>t.style.display='none',1600)}
+let actx;
+const slashPool=[];
+function slashSnd(){
+  if(S.mute) return;
+  try{
+    let a=slashPool.find(x=>x.ended||x.paused);
+    if(!a){ a=new Audio('slash.m4a'); a.preload='auto'; slashPool.push(a); }
+    a.currentTime=0; a.volume=0.7; a.play().catch(()=>{});
+  }catch(e){}
+}
 function power(){
   const base = 40 + S.lv*8;
   return Object.values(S.gear).reduce((a,g)=> g ? a + g.ilvl*8 + g.plus*12 + g.atk*3 + g.def*2 + g.r*20 : a, base);
@@ -365,26 +423,33 @@ function loop(){
 function startFight(){
   if(S.energy<2){ toast('Vigore insufficiente'); return; }
   const Z = ZONES[S.zone];
-  S.energy -= 2; S.fighting = true; S.hp = 100; S.ehp = Z.hp;
+  const boss = (S.wins>0 && S.wins%6===5);
+  S.boss = boss;
+  S.energy -= boss?4:2; S.fighting = true; S.hp = 100; S.ehp = boss? Math.round(Z.hp*2.2): Z.hp;
+  if(boss) toast('BOSS · '+Z.boss);
   renderHuntChrome();
   let n = 0;
   const id = setInterval(()=>{
     if(!S.fighting){ clearInterval(id); return; }
     n++;
+    slashSnd();
     const watk = (S.gear.weapon && S.gear.weapon.atk) || 0;
     const def = Object.values(S.gear).reduce((a,g)=>g?a+g.def+g.plus*2:a,0);
     const dmg = 28 + Math.floor(Math.random()*18) + watk + S.lv*3;
-    const taken = Math.max(4, Z.hit + Math.floor(Math.random()*6) - Math.floor(def/6));
+    const taken = Math.max(4, (boss?Z.hit+8:Z.hit) + Math.floor(Math.random()*6) - Math.floor(def/6));
     S.ehp = Math.max(0, S.ehp - (20 + Math.floor(dmg/10)));
     S.hp = Math.max(0, S.hp - taken);
     floatDmg(dmg, false); floatDmg(taken, true);
     renderHuntChrome();
     if(S.ehp<=0){
       S.fighting=false; clearInterval(id);
-      S.xp += Z.xp + S.lv*4; S.crowns += 2 + S.zone; S.wins++;
+      S.q.kills++; if(boss) S.q.bosses++;
+      if(S.q.kills===40){ S.dust+=80; toast("Quest · 40 prede · +80 polvere"); }
+      if(S.q.bosses===5){ S.dust+=120; toast("Quest · 5 boss · +120 polvere"); }
+      S.xp += (boss?Z.xp*3:Z.xp) + S.lv*4; S.crowns += (boss?12:2) + S.zone; S.wins++;
       if(S.xp>=S.xpMax){
         S.xp-=S.xpMax; S.lv++; S.xpMax=Math.round(S.xpMax*1.25);
-        S.energyMax = 20 + S.lv*2; S.energy = S.energyMax;
+        S.energyMax = 36 + S.lv*2; S.energy = S.energyMax;
         if(S.lv===4 && !S.pet){ S.pet={name:'Scarabeo di Muschio', lv:1}; toast('Uovo schiuso · Scarabeo di Muschio'); }
         else toast('Livello '+S.lv);
       }
@@ -420,12 +485,19 @@ function rollDrop(){
   const key = empty.length ? empty[Math.floor(Math.random()*empty.length)] : keys[Math.floor(Math.random()*keys.length)];
   const bonus = ZONES[S.zone].drop;
   const r = Math.min(7, (S.lv<3 ? 0 : Math.random()<0.06 ? 3 : Math.random()<0.22 ? 2 : Math.random()<0.55 ? 1 : 0) + bonus);
-  const names = NAMES[S.zone][key];
+  const zid = Math.min(S.zone, 5);
+  let names = (NAMES[zid]&&NAMES[zid][key]) ? NAMES[zid][key] : NAMES[0][key];
+  let svg = SLOTS[key].svg;
+  if(key==='weapon'){
+    const w = WEPS[Math.floor(Math.random()*WEPS.length)];
+    svg = w.svg;
+    names = w.names;
+  }
   const ilvl = Math.max(1, S.lv + S.zone*2 + Math.floor(Math.random()*4) + r);
   const item = {
     slot: SLOTS[key].slot,
-    svg: SLOTS[key].svg,
-    name: names[Math.min(r, names.length-1)],
+    svg,
+    name: names[Math.min(Math.min(r, names.length-1), names.length-1)],
     r, ilvl, plus:0,
     atk: Math.round(((key==='weapon'||key==='ring'||key==='amulet') ? 6 : 2) + ilvl*(1+r*0.35) + r*4),
     def: key==='weapon' ? 0 : Math.round(4 + ilvl*(0.8+r*0.3) + r*3)
@@ -466,6 +538,7 @@ function huntView(){
         <div class="fabcol">
           <div class="fab" onclick="toast('Ricompense')">🎁</div>
           <div class="fab" onclick="S.fighting=false;toast('Pausa')">⏸</div>
+          <div class="fab" onclick="S.mute=!S.mute;toast(S.mute?'Audio off':'Audio on')">${S.mute?'🔇':'🔊'}</div>
         </div>
         <div class="hp-wrap" id="bars" style="display:${S.fighting?'flex':'none'}">
           <div class="hp ally"><i id="hpA" style="width:${S.hp}%"></i></div>
@@ -583,7 +656,18 @@ function setZone(i){
   S.zone=i; toast(z.n); render(); if(S.tab==='hunt') requestAnimationFrame(bootThree);
 }
 function worldView(){
-  return `<div class="kicker" style="margin-bottom:10px">Reame · zone di caccia</div>
+  const qdone = S.q.kills>=40;
+  return `<div class="kicker" style="margin-bottom:10px">Reame · zone e quest</div>
+    <div class="card" style="margin-bottom:10px">
+      <div class="kicker">Quest attiva</div>
+      <b>Caccia 40 bestie</b>
+      <div class="kicker" style="margin-top:4px">${S.q.kills}/40 · ${qdone?'COMPLETATA · +80 polvere già presa':''}</div>
+    </div>
+    <div class="card" style="margin-bottom:10px">
+      <div class="kicker">Quest boss</div>
+      <b>Abbatti 5 boss</b>
+      <div class="kicker" style="margin-top:4px">${S.q.bosses}/5</div>
+    </div>
     ${ZONES.map(z=>{
       const ok = S.lv>=z.need;
       const on = S.zone===z.id;
@@ -645,6 +729,7 @@ function upgrade(key, cost){
   if(g.plus>=10){toast('Già +10');return}
   if(S.dust<cost){toast('Polvere insufficiente');return}
   S.dust-=cost; g.plus++;
+  S.q.upgrades++;
   if(g.plus===4||g.plus===7||g.plus===10) toast(g.name+' cambia forma');
   else toast(g.name+' +'+g.plus);
   openItem(key); if(S.tab==='char') render();
