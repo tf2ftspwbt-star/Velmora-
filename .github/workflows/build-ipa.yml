@@ -10,19 +10,14 @@ jobs:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Prepara www
         run: |
           mkdir -p www
-          cp -n index.html www/ 2>/dev/null || true
-          cp -n manifest.json www/ 2>/dev/null || true
-          cp -n sw.js www/ 2>/dev/null || true
-          cp -n icon-180.png www/ 2>/dev/null || true
-          cp -n icon-512.png www/ 2>/dev/null || true
+          cp -f index.html manifest.json sw.js icon-180.png icon-512.png www/ || true
           ls -la www
 
       - name: Dipendenze
@@ -30,28 +25,36 @@ jobs:
           npm install
           npx cap add ios
           npx cap sync ios
+          cd ios/App
+          if [ -f Podfile ]; then pod install; fi
+          ls -la
 
       - name: Compila senza firma
         run: |
           cd ios/App
-          xcodebuild \
-            -project App.xcodeproj \
-            -scheme App \
-            -configuration Release \
-            -sdk iphoneos \
+          if [ -f App.xcworkspace/contents.xcworkspacedata ]; then
+            TARGET="-workspace App.xcworkspace"
+          else
+            TARGET="-project App.xcodeproj"
+          fi
+          xcodebuild $TARGET -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' \
             -derivedDataPath build \
-            CODE_SIGN_IDENTITY=- \
-            CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
             DEVELOPMENT_TEAM="" \
+            CODE_SIGN_STYLE=Manual \
             PRODUCT_BUNDLE_IDENTIFIER=it.velmora.app \
             IPHONEOS_DEPLOYMENT_TARGET=15.0
 
       - name: Crea IPA
         run: |
-          APP=$(find ios/App/build -name "App.app" -type d | head -n 1)
+          APP=$(find ios/App/build -name "*.app" -type d | head -n 1)
           echo "Trovato: $APP"
-          mkdir -p Payload
+          test -n "$APP"
+          rm -rf Payload
+          mkdir Payload
           cp -R "$APP" Payload/Velmora.app
           zip -r Velmora.ipa Payload
 
