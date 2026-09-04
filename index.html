@@ -262,7 +262,7 @@ const slashPool=[];
 let theme;
 function themePlay(){
   try{
-    if(!theme){ theme=new Audio('theme.m4a'); theme.loop=true; theme.volume=0.32; }
+    if(!theme){ theme=new Audio("Daniel's Song.m4a"); theme.loop=true; theme.volume=0.32; }
     if(S.mute){ theme.pause(); return; }
     theme.play().catch(()=>{});
   }catch(e){}
