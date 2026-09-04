@@ -7,16 +7,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Velmora" />
+  <meta name="apple-mobile-web-app-title" content="Kareth" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-180.png" />
-  <title>VELMORA</title>
+  <title>KARETH</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:#070b16; --bg2:#0c1222; --card:#121a2e; --line:#2a3550; --soft:#1e2740;
-      --text:#f3efe6; --muted:#8b93a7; --copper:#e8a54b; --teal:#4ecdc4; --rose:#e85d4c;
+      --bg:#140e10; --bg2:#1a1216; --card:#241820; --line:#4a3038; --soft:#3a242c;
+      --text:#f4ebe4; --muted:#b09898; --copper:#d45c5c; --teal:#e8c9a0; --rose:#c43c48;
       --nav: calc(64px + env(safe-area-inset-bottom));
     }
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -25,9 +25,9 @@
     .screen{flex:1;overflow-y:auto;padding:12px 12px calc(var(--nav) + 10px);scrollbar-width:none}
     .screen::-webkit-scrollbar{display:none}
     .nav{position:absolute;left:0;right:0;bottom:0;height:var(--nav);padding-bottom:env(safe-area-inset-bottom);
-      background:#0a1020;border-top:1px solid var(--soft);display:grid;grid-template-columns:repeat(4,1fr);z-index:20}
+      background:#120c10;border-top:1px solid var(--soft);display:grid;grid-template-columns:repeat(4,1fr);z-index:20}
     .nav button{background:0;border:0;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;letter-spacing:.12em;font-weight:600}
-    .nav button.on{color:var(--copper)}
+    .nav button.on{color:#e8c9a0}
     .nav svg{width:22px;height:22px}
     .card,.row,.seg button{background:var(--card);border:1px solid var(--line);border-radius:16px}
     .card{padding:14px}
@@ -35,16 +35,16 @@
     .seg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
     .seg button{padding:11px 6px;color:var(--muted);font-size:11px;font-weight:600}
     .seg button small{display:block;font-weight:400;opacity:.7;margin-top:2px;font-size:9px;letter-spacing:.08em}
-    .seg button.on{background:#1c160a;border-color:var(--copper);color:var(--copper)}
+    .seg button.on{background:#2a1818;border-color:#d45c5c;color:#e8c9a0}
     .btn{border:0;border-radius:12px;padding:11px 14px;font-weight:700;font-size:13px}
-    .btn-c{background:var(--copper);color:#1a1204}
+    .btn-c{background:#d45c5c;color:#fff8f4}
     .btn-g{background:#161e32;color:var(--text);border:1px solid var(--line)}
     .locked{opacity:.45}
     .kicker{font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
-    .toast{position:absolute;left:16px;right:16px;bottom:calc(var(--nav)+10px);background:#1a1408;border:1px solid #b67a28;color:var(--copper);padding:10px;border-radius:12px;font-size:12px;text-align:center;display:none;z-index:30}
+    .toast{position:absolute;left:16px;right:16px;bottom:calc(var(--nav)+10px);background:#2a1418;border:1px solid #d45c5c;color:#e8c9a0;padding:10px;border-radius:12px;font-size:12px;text-align:center;display:none;z-index:30}
 
     /* 3D stage */
-    #stage{position:relative;height:268px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0a1420;margin-bottom:10px}
+    #stage{position:relative;height:268px;border-radius:8px 8px 18px 18px;overflow:hidden;border:1px solid var(--line);background:#1a1014;margin-bottom:10px}
     #c3d{position:absolute;inset:0;width:100%;height:100%;display:block}
     .hud{position:absolute;inset:0;pointer-events:none;z-index:2}
     .hud > *{pointer-events:auto}
@@ -87,25 +87,26 @@
 <div id="app">
   <div id="view" class="screen"></div>
   <nav class="nav">
-    <button class="on" data-tab="hunt" onclick="go('hunt')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19 L14 5 M9 5 h5 v5 M16 14 l4 6 H8z"/></svg>CACCIA</button>
-    <button data-tab="char" onclick="go('char')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 l7 4 v6 c0 5-3 8-7 9-4-1-7-4-7-9V7z"/></svg>EROE</button>
-    <button data-tab="world" onclick="go('world')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18 V9 l8-5 8 5 v9 H4z M9 18 v-6 h6 v6"/></svg>REAME</button>
-    <button data-tab="clash" onclick="go('clash')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 c3 3 5 6 5 10a5 5 0 1 1-10 0c0-4 2-7 5-10z"/></svg>LIZZA</button>
+    <button class="on" data-tab="hunt" onclick="go('hunt')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19 L14 5 M9 5 h5 v5 M16 14 l4 6 H8z"/></svg>CAMPO</button>
+    <button data-tab="char" onclick="go('char')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 l7 4 v6 c0 5-3 8-7 9-4-1-7-4-7-9V7z"/></svg>CORTE</button>
+    <button data-tab="world" onclick="go('world')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18 V9 l8-5 8 5 v9 H4z M9 18 v-6 h6 v6"/></svg>VIE</button>
+    <button data-tab="order" onclick="go('order')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 c3 3 5 6 5 10a5 5 0 1 1-10 0c0-4 2-7 5-10z"/></svg>ORDINE</button>
   </nav>
   <div class="toast" id="toast"></div>
   <div class="sheet" id="sheet" onclick="if(event.target===this)closeSheet()"></div>
 </div>
 <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+<script type="module">
+import {GLTFLoader} from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
+window._gltfLoader = new GLTFLoader();
+</script>
 <script>
 const RAR = [
   {id:0,n:'Comune',col:'#9aa4b5'},
-  {id:1,n:'Temprato',col:'#d0d6e0'},
-  {id:2,n:'Runico',col:'#6fbf73'},
-  {id:3,n:'Ancestrale',col:'#5ad0ff'},
-  {id:4,n:'Draconico',col:'#b48cff'},
-  {id:5,n:'Abissale',col:'#e85d4c'},
-  {id:6,n:'Stellare',col:'#e8a54b'},
-  {id:7,n:'Eclisseforgiato',col:'#4ecdc4'}
+  {id:1,n:'Raro',col:'#6fbf73'},
+  {id:2,n:'Epico',col:'#b48cff'},
+  {id:3,n:'Leggendario',col:'#e8a54b'}
 ];
 
 const SLOTS = {
@@ -197,7 +198,7 @@ const NAMES = {
 
 const S = {
   tab:'hunt', sub:'gear',
-  name:'Vesper', lv:1, xp:0, xpMax:120,
+  name:'Kareth', lv:1, xp:0, xpMax:240,
   energy:36, energyMax:36, gems:0, crowns:12, dust:0,
   auto:false, fighting:false, boss:false, mute:false,
   hp:100, ehp:100,
@@ -205,49 +206,56 @@ const S = {
   bag:[],
   zone:0,
   wins:0,
-  q:{kills:0, bosses:0, upgrades:0},
+  q:{kills:0, bosses:0, upgrades:0}, pass:0, forge:0, raid:"",
   gear:{ helm:null, shoulder:null, chest:null, legs:null, boots:null, weapon:null, ring:null, shield:null, amulet:null }
 };
 const ZONES = [
-  {id:0, n:'Bosco del Falò', need:1, hp:100, hit:6, xp:25, drop:0, boss:'Cinghiale di Muschio'},
-  {id:1, n:'Miniera Abbandonata', need:4, hp:145, hit:11, xp:40, drop:1, boss:'Golem di Scorie'},
-  {id:2, n:'Fenditura', need:8, hp:210, hit:16, xp:60, drop:2, boss:'Sentinella Eclissata'},
-  {id:3, n:'Palude del Relitto', need:12, hp:280, hit:22, xp:85, drop:3, boss:'Idra di Marea'},
-  {id:4, n:'Cratere di Cenere', need:16, hp:360, hit:28, xp:110, drop:4, boss:'Tiranno Magmatico'},
-  {id:5, n:'Vetta Glaciale', need:20, hp:460, hit:36, xp:140, drop:5, boss:'Wyrm di Ghiaccio'}
+  {id:0, n:'Strada delle Ceneri', need:1, hp:100, hit:6, xp:14, drop:0, boss:'Mastino di Bragia'},
+  {id:1, n:'Cava del Sale Nero', need:4, hp:145, hit:11, xp:18, drop:1, boss:'Custode di Sale'},
+  {id:2, n:'Ponte Spezzato', need:8, hp:210, hit:16, xp:24, drop:2, boss:'Araldo del Vuoto'},
+  {id:3, n:'Maree di Ruggine', need:12, hp:280, hit:22, xp:30, drop:3, boss:'Regina di Chiglia'},
+  {id:4, n:'Fornaci Alte', need:16, hp:360, hit:28, xp:36, drop:4, boss:'Padre della Bragia'},
+  {id:5, n:'Corona Bianca', need:20, hp:460, hit:36, xp:42, drop:5, boss:'Wyrm del Gelo'}
 ];
 
 function svgIco(kind, col='#c9d0dc', r=0){
-  const body={
-    helm:`<path d="M4 13 Q4 6 12 4 Q20 6 20 13 L20 16 Q12 19 4 16 Z"/><path d="M7 13 H17" fill="none"/><path d="M12 4 V7" fill="none"/>`,
-    shoulders:`<path d="M2 11 L8 6 L11 12 L4 16 Z"/><path d="M22 11 L16 6 L13 12 L20 16 Z"/>`,
-    chest:`<path d="M8 3 L16 3 L20 8 L17 21 L7 21 L4 8 Z"/><path d="M12 8 V18" fill="none"/><path d="M8 12 H16" fill="none"/>`,
-    legs:`<path d="M8 3 H16 V8 L15 21 H13 L12 10 L11 21 H9 L8 8 Z"/>`,
-    boots:`<path d="M5 7 H14 V13 H19 L21 19 H4 V13 H5 Z"/>`,
-    sword:`<path d="M12 1.5 L14.2 4 L13.2 13 L16.5 21 H7.5 L10.8 13 L9.8 4 Z"/><path d="M8 14 H16" fill="none"/>`,
-    axe:`<path d="M11 3 H13 V14"/><path d="M13 5 L21 3 L21 12 L13 9 Z"/><path d="M10 20 H14 L13 14 H11 Z"/>`,
-    bow:`<path d="M7 3 Q19 12 7 21" fill="none"/><path d="M8 6 L18 12 L8 18" fill="none"/><circle cx="18" cy="12" r="1.2"/>`,
-    staff:`<path d="M12 6 V22"/><circle cx="12" cy="5" r="3.2"/><circle cx="12" cy="5" r="1.4" fill="none"/>`,
-    dagger:`<path d="M12 2 L13.4 9 L16 21 H8 L10.6 9 Z"/><path d="M9 12 H15" fill="none"/>`,
-    shield:`<path d="M12 2 L21 6 V13 C21 18 12 22.5 12 22.5 C12 22.5 3 18 3 13 V6 Z"/><path d="M12 6 V18" fill="none"/>`,
-    ring:`<circle cx="12" cy="13" r="6" fill="none"/><circle cx="12" cy="13" r="3.4" fill="none"/><path d="M12 3 L13.2 7 L12 8 L10.8 7 Z"/>`,
-    amulet:`<path d="M12 2 L13 7 L12 9 L11 7 Z"/><path d="M12 9 C7 12 7 19 12 21 C17 19 17 12 12 9 Z"/>`
+  const fill = col;
+  const dark = '#0b1020';
+  const paths={
+    helm:`<path d="M3.5 13 Q3.5 5.5 12 3.5 Q20.5 5.5 20.5 13 L20.5 16.5 Q12 20 3.5 16.5 Z"/><rect x="6.5" y="12" width="11" height="2.2" rx="0.6" fill="${dark}"/><path d="M11 3.5 V7.5" stroke="${dark}" fill="none"/>`,
+    shoulders:`<path d="M1.5 11 L8.5 5.5 L11.5 12.5 L3.5 16.5 Z"/><path d="M22.5 11 L15.5 5.5 L12.5 12.5 L20.5 16.5 Z"/>`,
+    chest:`<path d="M7.5 3 L16.5 3 L21 8.2 L17.5 21.5 L6.5 21.5 L3 8.2 Z"/><path d="M12 8 V18" stroke="${dark}" fill="none"/><path d="M8 12.5 H16" stroke="${dark}" fill="none"/>`,
+    legs:`<path d="M8 3 H16 V8 L15.2 21.5 H12.8 L12 11 L11.2 21.5 H8.8 L8 8 Z"/>`,
+    boots:`<path d="M4.5 7 H14.2 V13 H19.2 L21.2 19.5 H4.2 V13 H4.5 Z"/>`,
+    sword:`<path d="M12 1 L14.4 3.8 L13.3 13.2 L17 22 H7 L10.7 13.2 L9.6 3.8 Z"/><rect x="7.5" y="13.4" width="9" height="1.8" fill="${dark}"/>`,
+    axe:`<rect x="11" y="3" width="2.2" height="14" rx="0.6"/><path d="M13.2 4.5 L21.5 2.8 L21.5 12.2 L13.2 9.2 Z"/><path d="M9.5 20.5 H14.5 L13.2 16 H10.8 Z"/>`,
+    bow:`<path d="M6.5 2.5 Q20 12 6.5 21.5" fill="none" stroke="${fill}" stroke-width="2"/><path d="M8 6 L19 12 L8 18" fill="none" stroke="${fill}" stroke-width="1.4"/><circle cx="19" cy="12" r="1.4"/>`,
+    staff:`<rect x="11.1" y="7" width="1.8" height="15" rx="0.5"/><circle cx="12" cy="5" r="3.4"/><circle cx="12" cy="5" r="1.5" fill="${dark}"/>`,
+    dagger:`<path d="M12 1.8 L13.6 9 L16.2 21.5 H7.8 L10.4 9 Z"/><rect x="8.6" y="11.5" width="6.8" height="1.5" fill="${dark}"/>`,
+    shield:`<path d="M12 1.8 L21.2 6 V13.2 C21.2 18.2 12 22.6 12 22.6 C12 22.6 2.8 18.2 2.8 13.2 V6 Z"/><path d="M12 6.5 V18" stroke="${dark}" fill="none"/>`,
+    ring:`<circle cx="12" cy="13.2" r="6.2" fill="none" stroke="${fill}" stroke-width="2.2"/><circle cx="12" cy="13.2" r="3.2" fill="none" stroke="${fill}" stroke-width="1.4"/><path d="M12 2.2 L13.4 7 L12 8.2 L10.6 7 Z"/>`,
+    amulet:`<path d="M12 1.6 L13.2 7 L12 9 L10.8 7 Z"/><path d="M12 9 C6.8 12 6.8 19.2 12 21.4 C17.2 19.2 17.2 12 12 9 Z"/>`
   };
   let extra='';
-  if(r>=2) extra+=`<circle cx="12" cy="12" r="10" fill="none" stroke="${col}" stroke-opacity="0.25"/>`;
-  if(r>=3) extra+=`<path d="M12 1 L13 3 L12 2.2 L11 3 Z" fill="${col}"/>`;
-  if(r>=4) extra+=`<circle cx="12" cy="12" r="2.1" fill="${col}" fill-opacity="0.9"/>`;
-  if(r>=5) extra+=`<path d="M2 12 H5 M19 12 H22 M12 2 V5 M12 19 V22" fill="none" stroke="${col}"/>`;
-  if(r>=6) extra+=`<circle cx="12" cy="12" r="11.2" fill="none" stroke="${col}" stroke-dasharray="2 2"/>`;
-  if(r>=7) extra+=`<path d="M4 4 L6 6 M20 4 L18 6 M4 20 L6 18 M20 20 L18 18" fill="none"/>`;
-  const inner=(body[kind]||'<circle cx="12" cy="12" r="6"/>')+extra;
-  const op = 0.35 + Math.min(0.5, r*0.07);
-  const sw = 1.2 + Math.min(0.8, r*0.12);
-  return `<svg class="ico" viewBox="0 0 24 24" fill="${col}" fill-opacity="${op}" stroke="${col}" stroke-width="${sw}" stroke-linejoin="round" stroke-linecap="round">${inner}</svg>`;
+  if(r>=2) extra+=`<circle cx="12" cy="12" r="11" fill="none" stroke="${fill}" stroke-opacity="0.35" stroke-width="1"/>`;
+  if(r>=4) extra+=`<circle cx="19" cy="5" r="2" fill="${fill}"/>`;
+  if(r>=6) extra+=`<circle cx="12" cy="12" r="11.6" fill="none" stroke="${fill}" stroke-dasharray="2 1.5"/>`;
+  const inner=(paths[kind]||`<circle cx="12" cy="12" r="7"/>`)+extra;
+  return `<svg class="ico" viewBox="0 0 24 24" fill="${fill}" stroke="none">${inner}</svg>`;
 }
 
 let three = {ready:false, raf:0};
 
+const SAVE='kareth.v1';
+function persist(){ try{ localStorage.setItem(SAVE, JSON.stringify({
+  lv:S.lv,xp:S.xp,xpMax:S.xpMax,energy:S.energy,energyMax:S.energyMax,gems:S.gems,crowns:S.crowns,dust:S.dust,
+  bag:S.bag,zone:S.zone,wins:S.wins,q:S.q,gear:S.gear,pet:S.pet,name:S.name,pass:S.pass||0,forge:S.forge||0,raid:S.raid||''
+})); }catch(e){} }
+function loadSave(){
+  try{ const o=JSON.parse(localStorage.getItem(SAVE)||'null'); if(!o) return;
+    Object.assign(S,o); S.fighting=false; S.auto=false; S.boss=false;
+  }catch(e){}
+}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._i);t._i=setTimeout(()=>t.style.display='none',1600)}
 let actx;
 const slashPool=[];
@@ -399,26 +407,31 @@ function bootThree(){
     rock.position.set(-1.8+i*1.1, 0.12, 1.3+((i%2)*0.2)); rock.rotation.y=i; scene.add(rock);
   }
 
-  const wr = S.gear.weapon ? S.gear.weapon.r : 0;
-  const hero = mkHuman({
-    armor: S.gear.chest ? 0x3a4a58 : 0x6a4a38,
-    accent: S.gear.chest ? rarityHex(S.gear.chest.r) : 0x3a2a20,
-    helm: S.gear.helm ? rarityHex(S.gear.helm.r) : 0xc9a07a,
-    blade: S.gear.weapon ? rarityHex(wr) : 0xb8d4e8,
-    shield: S.gear.shield ? rarityHex(S.gear.shield.r) : 0x2a6a78,
-    hasHelm: !!S.gear.helm,
-    hasChest: !!S.gear.chest,
-    hasWeapon: !!S.gear.weapon,
-    hasShield: !!S.gear.shield,
-    hasLegs: !!S.gear.legs,
-    hasBoots: !!S.gear.boots,
-    glow: S.gear.weapon && wr>=3 ? rarityHex(wr) : null
-  });
-  hero.position.set(-1.6, 0, 0.5); hero.rotation.y = Math.PI*0.55; scene.add(hero);
   const pet = mkBug(); pet.visible = !!S.pet; pet.position.set(-2.15, 0.18, 0.9); scene.add(pet);
   const orcA = mkOrc(1.7); const orcB = mkOrc(2.35); orcB.position.z = 0.95; scene.add(orcA, orcB);
 
-  three = {ready:true, scene, cam, renderer, hero, pet, orcs:[orcA,orcB], flame, fire, t:0};
+  three = {ready:true, scene, cam, renderer, hero:null, pet, orcs:[orcA,orcB], flame, fire, t:0, mixer:null};
+  function placeHero(obj){
+    obj.scale.setScalar(1.15);
+    obj.position.set(-1.55, 0, 0.45);
+    obj.rotation.y = Math.PI*0.55;
+    scene.add(obj);
+    three.hero = obj;
+  }
+  const load = window._gltfLoader;
+  if(load){
+    load.load('hero.glb', (g)=>{
+      if(g.animations && g.animations.length){
+        three.mixer = new THREE.AnimationMixer(g.scene);
+        const clip = g.animations.find(a=>/idle|Idle|wait/i.test(a.name)) || g.animations[0];
+        three.mixer.clipAction(clip).play();
+        three.clips = g.animations;
+      }
+      placeHero(g.scene);
+    }, undefined, ()=>{ placeHero(mkHuman({hasHelm:!!S.gear.helm,hasChest:!!S.gear.chest,hasWeapon:!!S.gear.weapon,hasShield:!!S.gear.shield,hasLegs:!!S.gear.legs,hasBoots:!!S.gear.boots})); });
+  } else {
+    placeHero(mkHuman({hasHelm:!!S.gear.helm,hasChest:!!S.gear.chest,hasWeapon:!!S.gear.weapon,hasShield:!!S.gear.shield,hasLegs:!!S.gear.legs,hasBoots:!!S.gear.boots}));
+  }
   loop();
 }
 function loop(){
@@ -427,20 +440,25 @@ function loop(){
   const t = three.t;
   three.flame.scale.y = 1 + Math.sin(t*8)*0.15;
   three.fire.intensity = 2 + Math.sin(t*6)*0.4;
-  if(S.fighting){
-    three.hero.position.x = -1.35 + Math.sin(t*10)*0.06;
-    three.hero.userData.blade.rotation.z = Math.sin(t*12)*0.6;
-    three.orcs.forEach((o,i)=> o.position.x = 1.7+i*0.6 + Math.sin(t*9+i)*0.05);
-    three.pet.rotation.y = t*3;
-  } else {
-    three.hero.position.y = Math.sin(t*2)*0.02;
+  if(three.mixer) three.mixer.update(0.016);
+  if(three.hero){
+    if(S.fighting){
+      three.hero.position.x = -1.35 + Math.sin(t*10)*0.04;
+      if(three.hero.userData && three.hero.userData.blade) three.hero.userData.blade.rotation.z = Math.sin(t*12)*0.6;
+    } else {
+      three.hero.position.y = Math.sin(t*2)*0.015;
+    }
   }
+  three.orcs.forEach((o,i)=> { if(S.fighting) o.position.x = 1.7+i*0.6 + Math.sin(t*9+i)*0.05; });
+  if(three.pet) three.pet.rotation.y = t*3;
+
   three.renderer.render(three.scene, three.cam);
   three.raf = requestAnimationFrame(loop);
 }
 
 function startFight(){
   if(S.energy<2){ toast('Vigore insufficiente'); return; }
+  themePlay();
   const Z = ZONES[S.zone];
   const boss = ((S.q.kills+1)%10===0);
   S.boss = boss;
@@ -462,24 +480,24 @@ function startFight(){
     renderHuntChrome();
     if(S.ehp<=0){
       S.fighting=false; clearInterval(id);
-      S.q.kills++; if(boss) S.q.bosses++;
+      S.q.kills++; if(boss) S.q.bosses++; S.pass=(S.pass||0)+(boss?15:5);
       if(S.q.kills===40){ S.dust+=80; toast("Quest · 40 prede · +80 polvere"); }
       if(S.q.bosses===5){ S.dust+=120; toast("Quest · 5 boss · +120 polvere"); }
-      S.xp += (boss?Z.xp*3:Z.xp) + S.lv*4; S.crowns += (boss?12:2) + S.zone; S.wins++;
+      S.xp += (boss?Z.xp*2:Z.xp) + S.lv; S.crowns += (boss?12:2) + S.zone; S.wins++;
       if(S.xp>=S.xpMax){
-        S.xp-=S.xpMax; S.lv++; S.xpMax=Math.round(S.xpMax*1.25);
+        S.xp-=S.xpMax; S.lv++; S.xpMax=Math.round(S.xpMax*1.45);
         S.energyMax = 36 + S.lv*2; S.energy = S.energyMax;
         if(S.lv===4 && !S.pet){ S.pet={name:'Scarabeo di Muschio', lv:1}; toast('Uovo schiuso · Scarabeo di Muschio'); }
         else toast('Livello '+S.lv);
       }
       const drop = rollDrop();
       toast(drop ? ('Vittoria · '+drop.name) : 'Vittoria');
-      render(); requestAnimationFrame(bootThree);
+      persist(); render(); requestAnimationFrame(bootThree);
       if(S.auto) setTimeout(()=>{ if(S.auto && !S.fighting) startFight(); }, 900);
     } else if(S.hp<=0){
       S.fighting=false; clearInterval(id);
       toast('Sconfitta · ricalibra la build');
-      render(); requestAnimationFrame(bootThree);
+      persist(); render(); requestAnimationFrame(bootThree);
       if(S.auto) setTimeout(()=>{ if(S.auto && !S.fighting) startFight(); }, 1400);
     }
   }, 700);
@@ -503,7 +521,7 @@ function rollDrop(){
   if(!force && Math.random()>0.42) return null;
   const key = empty.length ? empty[Math.floor(Math.random()*empty.length)] : keys[Math.floor(Math.random()*keys.length)];
   const bonus = ZONES[S.zone].drop;
-  const r = Math.min(7, (S.lv<3 ? 0 : Math.random()<0.06 ? 3 : Math.random()<0.22 ? 2 : Math.random()<0.55 ? 1 : 0) + bonus);
+  const r = Math.min(3, (S.lv<4 ? 0 : Math.random()<0.08 ? 3 : Math.random()<0.22 ? 2 : Math.random()<0.50 ? 1 : 0) + Math.min(2,Math.floor(bonus/2)));
   const zid = Math.min(S.zone, 5);
   let names = (NAMES[zid]&&NAMES[zid][key]) ? NAMES[zid][key] : NAMES[0][key];
   let svg = SLOTS[key].svg;
@@ -565,21 +583,22 @@ function huntView(){
         </div>
       </div>
     </div>
+    <div style="font-family:Cinzel,serif;letter-spacing:.12em;font-size:13px;margin:0 0 8px">KARETH <span style="color:#b09898;font-size:10px;letter-spacing:.16em">CORTE DELLE CENERI</span></div>
     <div class="mini" style="margin-bottom:8px">
-      <button class="btn btn-c" onclick="startFight()">⚔ ATTACCA</button>
-      <button class="btn btn-g" onclick="S.auto=!S.auto;toast(S.auto?'Auto-caccia ON':'Auto OFF');if(S.auto&&!S.fighting)startFight()">AUTO ${S.auto?'ON':'OFF'}</button>
+      <button class="btn btn-c" onclick="startFight()">COLPISCI</button>
+      <button class="btn btn-g" onclick="S.auto=!S.auto;toast(S.auto?'Marcia ON':'Marcia OFF');if(S.auto&&!S.fighting)startFight()">MARCIA ${S.auto?'ON':'OFF'}</button>
     </div>
     <div class="card" style="margin-bottom:8px;font-size:13px" onclick="go('world')">
-      <span class="kicker">Zona</span> <b>${ZONES[S.zone].n}</b>
+      <span class="kicker">${S.boss?'PREDA':'VIA'}</span> <b>${S.boss?ZONES[S.zone].boss:ZONES[S.zone].n}</b>
     </div>
     <div class="card" style="margin-bottom:8px;display:flex;justify-content:space-between">
-      <div><div class="kicker">Costo</div><b>⚡ −2 / caccia</b></div>
-      <div style="text-align:center"><div class="kicker">Polvere</div><b style="color:var(--copper)">${S.dust}</b></div>
-      <div style="text-align:right"><div class="kicker">Drop</div><span style="color:#6aa6ff">20%</span> <span style="color:#6fbf73">31%</span> <span style="color:#8b93a7">49%</span></div>
+      <div><div class="kicker">Vigore</div><b>−2</b></div>
+      <div style="text-align:center"><div class="kicker">Bragia</div><b style="color:#e8c9a0">${S.dust}</b></div>
+      <div style="text-align:right"><div class="kicker">Ordine</div><b>${S.q.kills}/40</b></div>
     </div>
     <div class="card">
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span class="kicker">Equipaggiamento</span><b style="color:var(--copper)">${power()} POTENZA</b>
+        <span class="kicker">Arsenale</span><b style="color:#e8c9a0">${power()} FORZA</b>
       </div>
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
         ${['helm','shoulder','chest','legs','boots','weapon','shield','ring','amulet'].map(k=>{
@@ -696,9 +715,50 @@ function worldView(){
       </div>`;
     }).join('')}`;
 }
-function clashView(){
-  return `<div class="kicker" style="margin-bottom:10px">Lizza · sblocchi da lvl 18</div>
-    ${['Compagnia','Arena','Guerre di Compagnia','Fortezza','Lizza di Conquista'].map(t=>`<div class="row locked"><b>${t}</b></div>`).join('')}`;
+function today(){ return new Date().toISOString().slice(0,10); }
+function orderView(){
+  const raidOk = S.raid !== today();
+  const forgeLeft = Math.max(0, S.forge - Date.now());
+  return `<div class="kicker" style="margin-bottom:10px">Ordine · attività lunghe</div>
+    <div class="card" style="margin-bottom:8px">
+      <div class="kicker">Pass stagione</div>
+      <b>Gradino ${1+Math.floor((S.pass||0)/100)}</b>
+      <div class="kicker" style="margin-top:4px">${(S.pass||0)%100}/100 · si riempie cacciando</div>
+    </div>
+    <div class="card" style="margin-bottom:8px">
+      <div class="kicker">Forgia</div>
+      <b>${forgeLeft?('In corso · '+Math.ceil(forgeLeft/1000)+'s'):'Pronta'}</b>
+      <div class="kicker" style="margin-top:4px">40 polvere · arma Rara garantita</div>
+      <button class="btn btn-c" style="margin-top:10px;width:100%" onclick="startForge()">FORGIA</button>
+    </div>
+    <div class="card" style="margin-bottom:8px">
+      <div class="kicker">Incursione del giorno</div>
+      <b>${raidOk?'Aperta · boss unico':'Già abbattuto oggi'}</b>
+      <button class="btn ${raidOk?'btn-c':'btn-g'}" style="margin-top:10px;width:100%" onclick="doRaid()">${raidOk?'AFFRONTA':'CHIUSO'}</button>
+    </div>
+    <div class="card">
+      <div class="kicker">Compagnia</div>
+      <b>Caccia 40 prede</b>
+      <div class="kicker" style="margin-top:4px">${S.q.kills}/40 · ricompensa polvere</div>
+    </div>`;
+}
+function startForge(){
+  if(S.forge && S.forge>Date.now()){ toast('Forgia occupata'); return; }
+  if(S.forge && S.forge<=Date.now()){
+    S.forge=0;
+    const item={slot:'Arma',svg:'sword',key:'weapon',name:'Lama di Forgia',r:1,ilvl:Math.max(4,S.lv+2),plus:0,atk:18+S.lv*3,def:0};
+    const old=S.gear.weapon; S.gear.weapon=item; if(old) S.bag.push(old);
+    S.dust+=4; persist(); toast('Forgiata · Lama di Forgia'); render(); return;
+  }
+  if(S.dust<40){ toast('Servono 40 polvere'); return; }
+  S.dust-=40; S.forge=Date.now()+20000; persist(); toast('In forgia · 20s'); render();
+}
+function doRaid(){
+  if(S.raid===today()){ toast('Torna domani'); return; }
+  if(S.lv<3){ toast('Serve livello 3'); return; }
+  S.raid=today(); S.dust+=25; S.crowns+=20; S.xp+=40; S.pass=(S.pass||0)+30;
+  if(S.xp>=S.xpMax){ S.xp-=S.xpMax; S.lv++; S.xpMax=Math.round(S.xpMax*1.45); }
+  persist(); toast('Incursione vinta · +25 polvere'); render();
 }
 
 function openItem(key){
@@ -761,9 +821,10 @@ function reroll(key){
 }
 
 function render(){
-  const map={hunt:huntView,char:charView,world:worldView,clash:clashView};
+  const map={hunt:huntView,char:charView,world:worldView,order:orderView};
   document.getElementById('view').innerHTML = map[S.tab]();
 }
+loadSave();
 render();
 requestAnimationFrame(bootThree);
 setInterval(()=>{
